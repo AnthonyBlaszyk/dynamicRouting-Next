@@ -2,12 +2,19 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const res = await fetch("https://api.chucknorris.io/jokes/categories");
+  const categoryList = await res.json();
+
   const response = await fetch(
     `https://api.chucknorris.io/jokes/random?category=${context.params.category}`
   );
   const joke = await response.json();
-  const category = context.params.category;
 
+  if (!categoryList.includes(context.params.category)) {
+    return { notFound: true };
+  }
+
+  const category = context.params.category;
   return {
     props: {
       joke: joke.value,
